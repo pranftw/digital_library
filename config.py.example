@@ -1,0 +1,25 @@
+# SERVER
+
+HOST = ""
+
+PORT = ""
+
+DEBUG = True
+
+SECRET_KEY = ""
+
+SERVER_NAME = ""
+
+ALLOWED = r""
+
+# DB
+
+USERNAME = ""
+
+PASSWORD = ""
+
+DB_URL = ""
+
+DB_PORT = ""
+
+DB_NAME = ""

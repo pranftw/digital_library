@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+
+<html prefix="og: https://ogp.me/ns#">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <meta property="og:title" content=""/>
+    <meta property="og:url" content=""/>
+    <meta property="og:image" content=""/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:description" content=""/>
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="">
+    <meta property="twitter:url" content="">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="">
+
+    <link rel="shortcut icon" type="image/svg_xml" href="{{ url_for('static', filename='favicon/favicon.svg') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}"
+  </head>
+
+  <body>
+    {% block content %}
+    {% endblock content %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+{% extends 'main.html' %}
+
+{% block content %}
+  <div style="height:20px;"></div>
+
+  <div style="height:20px;"></div>
+{% endblock content %}
