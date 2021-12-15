@@ -14,3 +14,5 @@ Base = automap_base(metadata=metadata)
 Base.prepare(engine)
 
 Session = sqlalchemy.orm.sessionmaker(engine)
+
+print("\nDB up and running!\n")

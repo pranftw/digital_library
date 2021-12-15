@@ -1,14 +1,11 @@
 from flask import Flask, url_for, render_template, redirect
-from flask_cors import CORS
 from flask import session as flask_session
-from config import HOST, PORT, DEBUG, SERVER_NAME, ALLOWED, SECRET_KEY
+from config import HOST, PORT, DEBUG, SECRET_KEY
 from db import Session
 
 
 app = Flask(__name__)
-app.config['SERVER_NAME'] = SERVER_NAME
 app.config['SECRET_KEY'] = SECRET_KEY
-cors = CORS(app, resources={r"/static/*": {"origins": ALLOWED}})
 
 
 def objs_to_dict(objs):
