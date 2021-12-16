@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+
+{% block css_imports %}
+{% endblock css_imports %}
+
+{% block content %}
+  <div style="height:20px;"></div>
+    <a href="{{ url_for('login') }}">Login</a>
+    <a href="{{ url_for('register') }}">Register</a>
+    {% if(current_user.is_authenticated) %}
+      <h2>{{ current_user.email }}</h2>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    {% endif %}
+  <div style="height:20px;"></div>
+{% endblock content %}
+
+{% block js_imports %}
+{% endblock js_imports %}

@@ -1,0 +1,23 @@
+{% extends 'main.html' %}
+
+{% block css_imports %}
+{% endblock css_imports %}
+
+{% block content %}
+  <div style="height:20px;"></div>
+    <form method="post" action="{{ url_for('register') }}">
+      <label for="first_name">First Name</label>
+      <input name="first_name" type="text" required><br>
+      <label for="first_name">Last Name</label>
+      <input name="last_name" type="text" required><br>
+      <label for="email">Email</label>
+      <input name="email" type="email" required maxlength="45"><br>
+      <label for="password">Password</label>
+      <input name="password" type="password" required><br>
+      <button>Submit</button>
+    </form>
+  <div style="height:20px;"></div>
+{% endblock content %}
+
+{% block js_imports %}
+{% endblock js_imports %}
