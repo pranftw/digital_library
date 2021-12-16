@@ -101,7 +101,7 @@ def profile():
 @login_required
 def bookslist(sem):
     """
-        Lists all the books for the user based on the sum
+        Lists all the books for the user based on the sem
     """
     return render_template('bookslist.html')
 
