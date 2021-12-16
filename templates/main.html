@@ -8,6 +8,12 @@
   </head>
 
   <body>
+    {% if(current_user.is_authenticated) %}
+      <div style="float: right;">
+        <div>{{ current_user.email }}<div>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    {% endif %}
     {% block content %}
     {% endblock content %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
