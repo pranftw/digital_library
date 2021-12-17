@@ -1,3 +1,8 @@
+# TODO: Admin ADD BOOKS functionality has to be added, when that
+# is done, if the stocks of the book were previously 0, then it needs 
+# to loop through the notify table and send an email to everyone who
+# has chosen to be notified!
+
 from flask import url_for, render_template, redirect, request, flash
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from __main__ import db, app
@@ -6,7 +11,17 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 session = db.session
 
 from models import *
-from helper import send_reset_email, hash_password, get_token, validate_token
+from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date
+
+def objs_to_dict(objs):
+    objs_list = []
+    for obj in objs:
+        obj_dict = {}
+        for (var,val) in vars(obj).items():
+            if(not(var.startswith("_"))):
+                obj_dict[var] = val
+        objs_list.append(obj_dict)
+    return objs_list
 
 login_manager = LoginManager(app)
 
@@ -17,7 +32,7 @@ def load_user(user_id):
 
 @app.context_processor
 def context_processor():
-    return dict(current_user=current_user)
+    return dict(current_user=current_user, enumerate=enumerate, request=request)
 
 
 @app.get("/")
@@ -27,7 +42,27 @@ def home():
         Lists all the features and provides links to login and register pages
         If logged in, it displays all the issued books and recommendations for Users
     """
-    return render_template('home.html')
+    total_due_days = 0
+    if current_user.is_authenticated:
+        issued = session.query(Issued).filter_by(user_id=current_user.id).all()
+        books = []
+        for iss in issued:
+            books.append(session.query(Book).filter_by(id=iss.book_id).first())
+        due_dates = []
+        for iss in issued:
+            due_date,due_diff = get_due_date(iss.issued_date)
+            if(due_diff>0):
+                total_due_days+=due_diff
+            due_dates.append(due_date)
+        fine = total_due_days*5
+
+        notify = session.query(Notify).filter_by(user_id=current_user.id).all()
+        watchlist_books = []
+        for noti in notify:
+            watchlist_books.append(session.query(Book).filter_by(id=noti.book_id).first())
+        return render_template('home.html', books=books, due_dates=due_dates, fine=fine, watchlist_books=watchlist_books)
+    else:
+        return render_template('home.html')
 
 
 @app.route("/login",methods=['GET','POST'])
@@ -75,6 +110,7 @@ def register():
         return redirect(url_for('home'))
     return render_template('register.html')
 
+
 @app.route("/reset_password", methods=['GET','POST'])
 def reset_request():
     if(request.method=='POST'):
@@ -88,6 +124,7 @@ def reset_request():
         else:
             flash("You are not registered with us!")
     return render_template('reset_request.html')
+
 
 @app.route("/reset_password/<token>", methods=['GET','POST'])
 def reset_password(token):
@@ -123,7 +160,21 @@ def explore(sem):
     """
         Lists all the books for the user based on the sem
     """
-    return render_template('explore.html')
+    if int(sem) in range(3,9):
+        issued = session.query(Issued).filter_by(user_id=current_user.id).all()
+        issue_status = []
+        books = session.query(Book).filter_by(sem=sem).all()
+        for i in range(len(books)):
+            status = False
+            for j in range(len(issued)):
+                if books[i].id==issued[j].book_id:
+                    status = True
+                    break
+            issue_status.append(status)
+    else:
+        flash("Invalid semester!")
+        return redirect(url_for('home'))
+    return render_template('explore.html', books=books, issue_status=issue_status, num_issued=len(issued))
 
 
 @app.post("/transact/<book_id>")
@@ -133,4 +184,55 @@ def transact(book_id):
         Book can be issued or returned
         If issued, it returns, else it issues it appropriate links are set up
     """
-    pass
+    issued_book = session.query(Issued).filter_by(book_id=book_id).first()
+    if issued_book: # RETURN IT
+        session.delete(issued_book)
+        session.commit()
+        flash("Book successfully returned!")
+    else: # ISSUE IT
+        already_issued = session.query(Issued).filter_by(user_id=current_user.id).all()
+        if(len(already_issued)!=5):
+            issue = Issued(book_id=book_id, user_id=current_user.id)
+            session.add(issue)
+            session.commit()
+            flash("Book successfully issued!")
+        else:
+            flash("You have reached your limit!")
+    return redirect(url_for('home'))
+
+@app.post("/notify/<book_id>")
+@login_required
+def notify(book_id):
+    form_data = request.form.to_dict()
+    notify_obj = session.query(Notify).filter_by(book_id=book_id).first()
+    if notify_obj:
+        flash("You have already opted to get notified for this book!")
+    else:
+        notify_obj = Notify(book_id=book_id,user_id=current_user.id)
+        session.add(notify_obj)
+        session.commit()
+        flash("You'll be notified when this book is in stock!")
+    return redirect(url_for('home'))
+
+
+@app.route("/search", methods=['GET','POST'])
+@login_required
+def search():
+    """
+        Search for a book
+    """
+    if request.method=='POST':
+        form_data = request.form.to_dict()
+        issued = session.query(Issued).filter_by(user_id=current_user.id).all()
+        issue_status = []
+        books = session.query(Book).filter(Book.title.like("%" + form_data['search'] + "%"))
+        books = books.order_by(Book.title).all()
+        for i in range(len(books)):
+            status = False
+            for j in range(len(issued)):
+                if books[i].id==issued[j].book_id:
+                    status = True
+                    break
+            issue_status.append(status)
+        return render_template('search.html',books=books,issue_status=issue_status)
+    return render_template('search.html')

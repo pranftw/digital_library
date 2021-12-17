@@ -3,3 +3,12 @@ from flask_login import UserMixin
 
 class User(db.Model, UserMixin):
     __tablename__='users'
+
+class Book(db.Model):
+    __tablename__='books'
+
+class Issued(db.Model):
+    __tablename__='issued'
+
+class Notify(db.Model):
+    __tablename__='notify'

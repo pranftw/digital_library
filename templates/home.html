@@ -8,6 +8,46 @@
     {% if current_user.is_authenticated==False %}
       <a href="{{ url_for('login') }}">Login</a>
       <a href="{{ url_for('register') }}">Register</a>
+    {% else %}
+      {% for i in range(3,9) %}
+        <a href="{{ url_for('explore',sem=i) }}">Sem {{ i }}</a>
+      {% endfor %}
+      <br>
+
+      <a href="{{ url_for('search') }}">Search Books</a>
+
+      <h2>FINE TO BE PAID: {{ fine }}</h2>
+
+      <h2>ISSUED</h2>
+      <div class="books_grid">
+        {% for i,book in enumerate(books) %}
+          <div class="book">
+            <h5>TITLE: {{ book.title }}</h5>
+            <h5>AUTHOR: {{ book.author }}</h5>
+            <h5>DUE DATE: {{ due_dates[i] }}</h5>
+            <form method="post" action="{{ url_for('transact',book_id=book['id']) }}">
+              <button>RETURN</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+
+      <h2>WATCHLIST</h2>
+      <div class="books_grid">
+        {% for i,book in enumerate(watchlist_books) %}
+          <div class="book">
+            <h5>TITLE: {{ book.title }}</h5>
+            <h5>AUTHOR: {{ book.author }}</h5>
+            <h5>DUE DATE: {{ due_dates[i] }}</h5>
+            {% if book.stocks!=0 %}
+              <form method="post" action="{{ url_for('transact',book_id=book['id']) }}">
+                <button>ISSUE</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
     {% endif %}
   <div style="height:20px;"></div>
 {% endblock content %}

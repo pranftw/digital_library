@@ -5,7 +5,16 @@
 
 {% block content %}
   <div style="height:20px;"></div>
-    <h2>ISSUED: {{ num_issued }} / 5</h2>
+
+    <h2>SEARCH</h2>
+
+    <form method="post">
+      <label for="search"></label>
+      <input name="search" type="text" required maxlength="100">
+      <button>Submit</button>
+    </form>
+    <br>
+
     <div class="books_grid">
       {% for i,book in enumerate(books) %}
         <div class="book">
@@ -21,9 +30,7 @@
                 <button>ISSUE</button>
               </form>
             {% else %}
-              <form method="post", action="{{ url_for('notify',book_id=book.id) }}">
-                <button>NOTIFY</button> 
-              </form>
+              <button>NOTIFY</button> 
             {% endif %}
           {% endif %}
         </div>
