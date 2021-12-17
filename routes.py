@@ -1,10 +1,12 @@
 from flask import url_for, render_template, redirect, request, flash
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from __main__ import db, app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 session = db.session
 
 from models import *
+from helper import send_reset_email, hash_password, get_token, validate_token
 
 login_manager = LoginManager(app)
 
@@ -34,11 +36,17 @@ def login():
         Users(faculties and students) have the same login and functionalities
         A checkbox if he's an admin and check the Admin table
     """
-    # TODO: password matching
     if(request.method=='POST'):
         form_data = request.form.to_dict()
         user = session.query(User).filter_by(email=form_data['email']).first()
-        login_user(user)
+        hashed_form_pw = hash_password(form_data['password'])
+        if(hashed_form_pw==user.password):
+            flash("Successful login!")
+            login_user(user, remember=form_data['remember'])
+            return redirect(url_for('home'))
+        else:
+            flash("Invalid email or password!")
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 
@@ -57,13 +65,47 @@ def register():
     """
         Users(faculties and students) have the same registration too
     """
-    # TODO: Password hashing
     if(request.method=='POST'):
         form_data = request.form.to_dict()
-        user = User(first_name=form_data['first_name'],last_name=form_data['last_name'],email=form_data['email'],password=form_data['password'])
+        hashed_pw = hash_password(form_data['password'])
+        user = User(first_name=form_data['first_name'],last_name=form_data['last_name'],email=form_data['email'],password=hashed_pw)
         session.add(user)
         session.commit()
+        flash("Successfully registered!")
+        return redirect(url_for('home'))
     return render_template('register.html')
+
+@app.route("/reset_password", methods=['GET','POST'])
+def reset_request():
+    if(request.method=='POST'):
+        form_data = request.form.to_dict()
+        user = session.query(User).filter_by(email=form_data['email']).first()
+        if user:
+            token = get_token(user)
+            send_reset_email(user.email,url_for('reset_password',token=token,_external=True))
+            flash("Link to reset password has been sent to your email!")
+            return redirect(url_for('login'))
+        else:
+            flash("You are not registered with us!")
+    return render_template('reset_request.html')
+
+@app.route("/reset_password/<token>", methods=['GET','POST'])
+def reset_password(token):
+    payload = validate_token(token)
+    print(payload)
+    if(payload):
+        if(request.method=='POST'):
+            form_data = request.form.to_dict()
+            user = session.query(User).filter_by(email=payload).first()
+            hashed_pw = hash_password(form_data['password'])
+            user.password = hashed_pw
+            session.commit()
+            flash("Password successfully reset!")
+            return redirect(url_for('login'))
+    else:
+        flash("Token invalid or exceeded time limit!")
+        return redirect(url_for('reset_request'))
+    return render_template('reset_password.html')
 
 
 @app.get("/profile")
