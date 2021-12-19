@@ -47,17 +47,18 @@ def home():
             books.append(session.query(Book).filter_by(id=iss.book_id).first())
         due_dates = []
         for iss in issued:
-            due_date,due_diff = get_due_date(iss.issued_date)
+            due_date,due_diff = get_due_date(iss.date)
             if(due_diff>0):
                 total_due_days+=due_diff
             due_dates.append(due_date)
         fine = total_due_days*5
 
         notify = session.query(Notify).filter_by(user_id=current_user.id).all()
+        book_requests = session.query(Requests).all()
         watchlist_books = []
         for noti in notify:
             watchlist_books.append(session.query(Book).filter_by(id=noti.book_id).first())
-        return render_template('home.html', books=books, due_dates=due_dates, fine=fine, watchlist_books=watchlist_books)
+        return render_template('home.html', books=books, due_dates=due_dates, fine=fine, watchlist_books=watchlist_books, book_requests=book_requests)
     else:
         return render_template('home.html')
 
@@ -285,3 +286,22 @@ def modify_stocks(book_id):
         flash("Stock updated!")
     return redirect(request.referrer)
         
+@app.post("/request_book")
+def request_book():
+    form_data = request.form.to_dict()
+    request_obj = Requests(title=form_data['title'],author=form_data['author'])
+    session.add(request_obj)
+    session.commit()
+    flash("Successfully requested for the book!")
+    return redirect(request.referrer)
+
+@app.post("/delete_request/<request_id>")
+def delete_request(request_id):
+    request_obj = session.query(Requests).filter_by(id=request_id).first()
+    if request_obj:
+        session.delete(request_obj)
+        session.commit()
+        flash("Request successfully deleted!")
+    else:
+        flash("Request with the corresponding request id not available!")
+    return redirect(url_for('home'))

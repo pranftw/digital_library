@@ -14,7 +14,7 @@
           <a href="{{ url_for('explore',sem=i) }}">Sem {{ i }}</a>
         {% endfor %}
         <br>
-
+        <br>
         <a href="{{ url_for('search') }}">Search Books</a>
 
         <h2>FINE TO BE PAID: {{ fine }}</h2>
@@ -43,13 +43,22 @@
               <h5>TITLE: {{ book.title }}</h5>
               <h5>AUTHOR: {{ book.author }}</h5>
               {% if book.stocks!=0 %}
-                <form method="post" action="{{ url_for('transact',book_id=book['id']) }}">
+                <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
                   <button>ISSUE</button>
                 </form>
               {% endif %}
             </div>
           {% endfor %}
         </div>
+
+        <h2>REQUEST BOOK</h2>
+          <form method="post" action="{{ url_for('request_book') }}">
+            <label for="title">Title</label>
+            <input name="title" type="text" required maxlength="40"><br>
+            <label for="author">Author</label>
+            <input name="author" type="text" required maxlength="40"><br>
+            <button>SUBMIT</button>
+          </form>
 
       {% endif %}
     {% else %}
@@ -58,9 +67,9 @@
             <a href="{{ url_for('explore',sem=i) }}">Sem {{ i }}</a>
           {% endfor %}
           <br>
+          <br>
       <a href="{{ url_for('search') }}">Search Books</a>
           <h2>ADD BOOK</h2>
-          <br>
           <form method="post" action="{{ url_for('add_book') }}">
             <label for="title">Title</label>
             <input name="title" type="text" required maxlength="40"><br>
@@ -74,6 +83,20 @@
             <input name="stocks" type="text" required maxlength="40"><br>
             <button>SUBMIT</button>
           </form>
+
+          <h2>REQUESTS</h2>
+          <div class="books_grid">
+            {% for br in book_requests %}
+              <div class="book">
+                <h5>TITLE: {{ br.title }}</h5>
+                <h5>AUTHOR: {{ br.author }}</h5>
+                <br>
+                <form method="post" action="{{ url_for('delete_request',request_id=br.id) }}">
+                  <button>DELETE</button>
+                </form>
+              </div>
+            {% endfor %}
+          </div>
 
         {% else %}
           <a href="{{ url_for('login') }}">Login</a>

@@ -12,3 +12,6 @@ class Issued(db.Model):
 
 class Notify(db.Model):
     __tablename__='notify'
+
+class Requests(db.Model):
+    __tablename__='requests'
