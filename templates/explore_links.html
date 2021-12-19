@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+
+{% block css_imports %}
+{% endblock css_imports %}
+
+{% block content %}
+  <div style="height:20px;"></div>
+  {% for i in range(3,9) %}
+    <a href="{{ url_for('explore',sem=i) }}">Sem {{ i }}</a>
+  {% endfor %}
+  <div style="height:20px;"></div>
+{% endblock content %}
+
+{% block js_imports %}
+{% endblock js_imports %}

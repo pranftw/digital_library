@@ -103,6 +103,9 @@ def register():
     if(request.method=='POST'):
         form_data = request.form.to_dict()
         errors = validate_form_data(form_data)
+        existing_user = session.query(User).filter_by(email=form_data['email']).first()
+        if existing_user:
+            errors.append("User already present with that email!")
         if len(errors)!=0:
             flash('<br>'.join(errors))
             return redirect(request.referrer)
@@ -165,6 +168,10 @@ def profile():
     """
     return render_template('profile.html')
 
+@app.get("/explore")
+@login_required
+def explore_links():
+    return render_template('explore_links.html')
 
 @app.get("/explore/<sem>")
 @login_required
@@ -202,7 +209,16 @@ def transact(book_id):
         flash("Invalid book id!")
         return redirect(request.referrer)
     if issued_book: # RETURN IT
+        orig_stocks = book_obj.stocks
         book_obj.stocks+=1
+        if book_obj.stocks!=0 and orig_stocks==0:
+            notify_objs = session.query(Notify).filter_by(book_id=book_id).all()
+            emails = []
+            for notify_obj in notify_objs:
+                emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
+                session.delete(notify_obj)
+            send_notify_email(emails,book_obj,url_for('explore',sem=book_obj.sem, _external=True))
+            session.commit()
         session.delete(issued_book)
         session.commit()
         flash("Book successfully returned!")

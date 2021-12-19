@@ -10,12 +10,10 @@
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
       {% else %}
-        {% for i in range(3,9) %}
-          <a href="{{ url_for('explore',sem=i) }}">Sem {{ i }}</a>
-        {% endfor %}
-        <br>
-        <br>
         <a href="{{ url_for('search') }}">Search Books</a>
+        <a href="{{ url_for('explore_links') }}">Explore</a>
+        <br>
+        <br>
 
         <h2>FINE TO BE PAID: {{ fine }}</h2>
 
@@ -65,12 +63,11 @@
       {% endif %}
     {% else %}
         {% if current_user.is_authenticated==True %}
-          {% for i in range(3,9) %}
-            <a href="{{ url_for('explore',sem=i) }}">Sem {{ i }}</a>
-          {% endfor %}
+          <a href="{{ url_for('search') }}">Search Books</a>
+          <a href="{{ url_for('explore_links') }}">Explore</a>
           <br>
           <br>
-      <a href="{{ url_for('search') }}">Search Books</a>
+          
           <h2>ADD BOOK</h2>
           <form method="post" action="{{ url_for('add_book') }}">
             <label for="title">Title</label>
