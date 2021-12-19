@@ -5,6 +5,7 @@ from __main__ import mail
 from flask_mail import Message
 import datetime as dt
 from datetime import timedelta
+import re
 
 def hash_password(pswd):
     return sha256(pswd.encode('utf-8')).hexdigest()
@@ -49,3 +50,54 @@ def get_due_date(issue_date):
     due_date_str = due_date_obj.strftime('%d-%m-%Y')
     return due_date_str, diff_days
 
+def validate_email(email):
+    pattern = re.compile(r'[a-zA-Z.0-9]+@bmsce.ac.in')
+    match = pattern.match(email)
+    if match:
+        return True
+    return False
+
+def validate_password(password):
+    lowercase = re.compile(r'[a-z]+')
+    uppercase = re.compile(r'[A-Z]+')
+    nums = re.compile(r'[0-9]+')
+    match = lowercase.match(password) and uppercase.match(password) and nums.match(password)
+    if match:
+        return True
+    return False
+
+def validate_name(name):
+    pattern = re.compile(r'^[a-zA-Z\s]+$')
+    match = pattern.match(name)
+    if match:
+        return True
+    return False
+
+def validate_sem(sem):
+    try:
+        sem = int(sum)
+        if sem in range(3-9):
+            return True
+    except:
+        pass
+    return False
+
+def validate_form_data(form_data):
+    errors = []
+    for k,v in form_data.items():
+        if k=='first_name' or k=='last_name' or k=='title' or k=='author':
+            if not(validate_name(v)):
+               errors.append(f"Enter a valid value for {k}!")
+        elif k=='email':
+            if not(validate_email(v)):
+                errors.append("Enter a valid BMSCE email!")
+        elif k=='password':
+            if not(validate_password(v)):
+                errors.append("Enter atleast one lowercase, one uppercase and one digit!")
+        elif k=='confirm_password':
+            if(not(form_data['password']==form_data['confirm_password'])):
+                errors.append("Both the passwords must match!")
+        elif k=='sem':
+            if not(validate_sem(v)):
+                errors.append("Semester should be in between 3 and 8(both inclusive)!")
+    return errors

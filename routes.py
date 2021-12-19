@@ -1,5 +1,3 @@
-# TODO: Forms have to be validated!
-
 from flask import url_for, render_template, redirect, request, flash
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from __main__ import db, app
@@ -8,7 +6,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 session = db.session
 
 from models import *
-from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date, send_notify_email
+from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date, send_notify_email, validate_form_data
 
 def objs_to_dict(objs):
     objs_list = []
@@ -71,6 +69,10 @@ def login():
     """
     if(request.method=='POST'):
         form_data = request.form.to_dict()
+        errors = validate_form_data(form_data)
+        if len(errors)!=0:
+            flash('<br>'.join(errors))
+            return redirect(request.referrer)
         user = session.query(User).filter_by(email=form_data['email']).first()
         hashed_form_pw = hash_password(form_data['password'])
         if(hashed_form_pw==user.password):
@@ -100,6 +102,10 @@ def register():
     """
     if(request.method=='POST'):
         form_data = request.form.to_dict()
+        errors = validate_form_data(form_data)
+        if len(errors)!=0:
+            flash('<br>'.join(errors))
+            return redirect(request.referrer)
         hashed_pw = hash_password(form_data['password'])
         user = User(first_name=form_data['first_name'],last_name=form_data['last_name'],email=form_data['email'],password=hashed_pw)
         session.add(user)
@@ -113,6 +119,10 @@ def register():
 def reset_request():
     if(request.method=='POST'):
         form_data = request.form.to_dict()
+        errors = validate_form_data(form_data)
+        if len(errors)!=0:
+            flash('<br>'.join(errors))
+            return redirect(request.referrer)
         user = session.query(User).filter_by(email=form_data['email']).first()
         if user:
             token = get_token(user)
@@ -131,6 +141,10 @@ def reset_password(token):
     if(payload):
         if(request.method=='POST'):
             form_data = request.form.to_dict()
+            errors = validate_form_data(form_data)
+            if len(errors)!=0:
+                flash('<br>'.join(errors))
+                return redirect(request.referrer)
             user = session.query(User).filter_by(email=payload).first()
             hashed_pw = hash_password(form_data['password'])
             user.password = hashed_pw
@@ -209,6 +223,10 @@ def transact(book_id):
 @login_required
 def notify(book_id):
     form_data = request.form.to_dict()
+    errors = validate_form_data(form_data)
+    if len(errors)!=0:
+        flash('<br>'.join(errors))
+        return redirect(request.referrer)
     notify_obj = session.query(Notify).filter_by(book_id=book_id).first()
     if notify_obj:
         flash("You have already opted to get notified for this book!")
@@ -228,6 +246,10 @@ def search():
     """
     if request.method=='POST':
         form_data = request.form.to_dict()
+        errors = validate_form_data(form_data)
+        if len(errors)!=0:
+            flash('<br>'.join(errors))
+            return redirect(request.referrer)
         issued = session.query(Issued).filter_by(user_id=current_user.id).all()
         issue_status = []
         books = session.query(Book).filter(Book.title.like("%" + form_data['search'] + "%"))
@@ -250,6 +272,10 @@ def add_book():
     """
     if current_user.is_admin:
         form_data = request.form.to_dict()
+        errors = validate_form_data(form_data)
+        if len(errors)!=0:
+            flash('<br>'.join(errors))
+            return redirect(request.referrer)
         new_book = Book(title=form_data['title'], author=form_data['author'], sem=form_data['sem'], subject=form_data['subject'], stocks=form_data['stocks'])
         session.add(new_book)
         session.commit()
@@ -262,6 +288,10 @@ def add_book():
 @app.post("/modify/<book_id>")
 def modify_stocks(book_id):
     form_data = request.form.to_dict()
+    errors = validate_form_data(form_data)
+    if len(errors)!=0:
+        flash('<br>'.join(errors))
+        return redirect(request.referrer)
     book = session.query(Book).filter_by(id=book_id).first()
     if book is None:
         flash("There is no book with that book id!")
@@ -289,6 +319,10 @@ def modify_stocks(book_id):
 @app.post("/request_book")
 def request_book():
     form_data = request.form.to_dict()
+    errors = validate_form_data(form_data)
+    if len(errors)!=0:
+        flash('<br>'.join(errors))
+        return redirect(request.referrer)
     request_obj = Requests(title=form_data['title'],author=form_data['author'])
     session.add(request_obj)
     session.commit()

@@ -9,13 +9,15 @@
 
   <body>
     <a href="{{ url_for('home') }}">HOME</a>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          {{ message }}
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+    {% autoescape false %}
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    {% endautoescape %}
     {% if(current_user.is_authenticated) %}
       <div style="float: right;">
         <h5>Welcome, {{ current_user.first_name }}<h5>
