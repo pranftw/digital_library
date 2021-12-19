@@ -276,7 +276,7 @@ def add_book():
         if len(errors)!=0:
             flash('<br>'.join(errors))
             return redirect(request.referrer)
-        new_book = Book(title=form_data['title'], author=form_data['author'], sem=form_data['sem'], subject=form_data['subject'], stocks=form_data['stocks'])
+        new_book = Book(title=form_data['title'], author=form_data['author'], sem=form_data['sem'], subject=form_data['subject'], stocks=form_data['stocks'], img_url=form_data['img_url'])
         session.add(new_book)
         session.commit()
         flash("Successfully added a new book!")

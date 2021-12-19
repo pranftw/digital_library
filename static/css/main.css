@@ -11,3 +11,14 @@
     padding:10px;
     background-color: #dbdbdb;
 }
+
+.book_img{
+    display:flex;
+    align-items: center;
+    align-content: center;
+    height:15em;
+    width:10em;
+    background-size:cover;
+    margin:auto;
+    padding:5px;
+}

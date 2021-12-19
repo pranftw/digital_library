@@ -1,16 +1,12 @@
 # SERVER
 
-HOST = ""
+HOST = "127.0.0.1"
 
-PORT = ""
+PORT = "3000"
 
 DEBUG = True
 
-SECRET_KEY = ""
-
-SERVER_NAME = ""
-
-ALLOWED = r""
+SECRET_KEY = "2c6b20ffffbf33ad906135ca5f1f2238"
 
 # DB
 
@@ -23,3 +19,8 @@ DB_URL = ""
 DB_PORT = ""
 
 DB_NAME = ""
+
+# EMAIL
+
+EMAIL_USERNAME = ""
+EMAIL_PASSWORD = ""

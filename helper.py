@@ -19,14 +19,15 @@ def send_reset_email(email, reset_url):
     mail.send(msg)
 
 def send_notify_email(emails, book_obj, home_url):
-    msg = Message('Book available notification!', sender='noreply@bmscelib.com',recipients=emails)
-    msg.body = f"""The book you requested {book_obj.title} by {book_obj.author} is now available!
-    Number of stocks left are {book_obj.stocks}.
-    Click the following link to be able to issue the book!
-    
-    {home_url}
-    """
-    mail.send(msg)
+    if len(emails)!=0:
+        msg = Message('Book available notification!', sender='noreply@bmscelib.com',recipients=emails)
+        msg.body = f"""The book you requested {book_obj.title} by {book_obj.author} is now available!
+        Number of stocks left are {book_obj.stocks}.
+        Click the following link to be able to issue the book!
+        
+        {home_url}
+        """
+        mail.send(msg)
 
 def get_token(user):
     s = Serializer(SECRET_KEY, 300)
@@ -58,10 +59,13 @@ def validate_email(email):
     return False
 
 def validate_password(password):
-    lowercase = re.compile(r'[a-z]+')
-    uppercase = re.compile(r'[A-Z]+')
-    nums = re.compile(r'[0-9]+')
-    match = lowercase.match(password) and uppercase.match(password) and nums.match(password)
+    lowercase = re.compile(r'.*[a-z]+.*')
+    uppercase = re.compile(r'.*[A-Z]+.*')
+    nums = re.compile(r'.*[0-9]+.*')
+    lowercase_match = True if lowercase.match(password) else False
+    uppercase_match = True if uppercase.match(password) else False
+    nums_match = True if nums.match(password) else False
+    match = lowercase_match and uppercase_match and nums_match
     if match:
         return True
     return False
@@ -75,8 +79,8 @@ def validate_name(name):
 
 def validate_sem(sem):
     try:
-        sem = int(sum)
-        if sem in range(3-9):
+        sem = int(sem)
+        if sem in range(3,9):
             return True
     except:
         pass
@@ -85,7 +89,7 @@ def validate_sem(sem):
 def validate_form_data(form_data):
     errors = []
     for k,v in form_data.items():
-        if k=='first_name' or k=='last_name' or k=='title' or k=='author':
+        if k=='first_name' or k=='last_name' or k=='title' or k=='author' or k=='subject':
             if not(validate_name(v)):
                errors.append(f"Enter a valid value for {k}!")
         elif k=='email':
@@ -93,7 +97,7 @@ def validate_form_data(form_data):
                 errors.append("Enter a valid BMSCE email!")
         elif k=='password':
             if not(validate_password(v)):
-                errors.append("Enter atleast one lowercase, one uppercase and one digit!")
+                errors.append("Enter atleast one lowercase, one uppercase and one digit in the password!")
         elif k=='confirm_password':
             if(not(form_data['password']==form_data['confirm_password'])):
                 errors.append("Both the passwords must match!")

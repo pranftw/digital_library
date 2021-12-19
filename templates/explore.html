@@ -11,6 +11,7 @@
     <div class="books_grid">
       {% for i,book in enumerate(books) %}
         <div class="book">
+          <img class="book_img" src="{{ book.img_url }}">
           <h5>ID: {{ book.id }}</h5>
           <h5>TITLE: {{ book.title }}</h5>
           <h5>AUTHOR: {{ book.author }}</h5>
