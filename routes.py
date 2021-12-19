@@ -218,7 +218,6 @@ def transact(book_id):
                 emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
                 session.delete(notify_obj)
             send_notify_email(emails,book_obj,url_for('explore',sem=book_obj.sem, _external=True))
-            session.commit()
         session.delete(issued_book)
         session.commit()
         flash("Book successfully returned!")
