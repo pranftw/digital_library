@@ -5,26 +5,38 @@
 
 {% block content %}
   <div style="height:20px;"></div>
-    <h2>ISSUED: {{ num_issued }} / 5</h2>
+    {% if current_user.is_admin==False %}
+      <h2>ISSUED: {{ num_issued }} / 5</h2>
+    {% endif %}
     <div class="books_grid">
       {% for i,book in enumerate(books) %}
         <div class="book">
+          <h5>ID: {{ book.id }}</h5>
           <h5>TITLE: {{ book.title }}</h5>
           <h5>AUTHOR: {{ book.author }}</h5>
-          {% if issue_status[i]==True %}
-            <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
-              <button>RETURN</button>
-            </form>
-          {% else %}
-            {% if book.stocks!=0 %} 
+          <h5>STOCKS: {{ book.stocks }}</h5>
+          {% if current_user.is_admin==False %}
+            {% if issue_status[i]==True %}
               <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
-                <button>ISSUE</button>
+                <button>RETURN</button>
               </form>
             {% else %}
-              <form method="post", action="{{ url_for('notify',book_id=book.id) }}">
-                <button>NOTIFY</button> 
-              </form>
+              {% if book.stocks!=0 %} 
+                <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
+                  <button>ISSUE</button>
+                </form>
+              {% else %}
+                <form method="post", action="{{ url_for('notify',book_id=book.id) }}">
+                  <button>NOTIFY</button> 
+                </form>
+              {% endif %}
             {% endif %}
+          {% else %}
+            <form method="post" action="{{ url_for('modify_stocks',book_id=book.id) }}">
+              <label for="stocks">ADD / DELETE stocks</label>
+              <input name="stocks" type="text"><br><br>
+              <button>MODIFY STOCKS</button>
+            </form>
           {% endif %}
         </div>
       {% endfor %}

@@ -1,7 +1,4 @@
-# TODO: Admin ADD BOOKS functionality has to be added, when that
-# is done, if the stocks of the book were previously 0, then it needs 
-# to loop through the notify table and send an email to everyone who
-# has chosen to be notified!
+# TODO: Forms have to be validated!
 
 from flask import url_for, render_template, redirect, request, flash
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
@@ -11,7 +8,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 session = db.session
 
 from models import *
-from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date
+from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date, send_notify_email
 
 def objs_to_dict(objs):
     objs_list = []
@@ -77,7 +74,7 @@ def login():
         hashed_form_pw = hash_password(form_data['password'])
         if(hashed_form_pw==user.password):
             flash("Successful login!")
-            login_user(user, remember=form_data['remember'])
+            login_user(user, remember=form_data.get('remember', False))
             return redirect(url_for('home'))
         else:
             flash("Invalid email or password!")
@@ -185,7 +182,12 @@ def transact(book_id):
         If issued, it returns, else it issues it appropriate links are set up
     """
     issued_book = session.query(Issued).filter_by(book_id=book_id).first()
+    book_obj = session.query(Book).filter_by(id=book_id).first()
+    if book_obj is None:
+        flash("Invalid book id!")
+        return redirect(request.referrer)
     if issued_book: # RETURN IT
+        book_obj.stocks+=1
         session.delete(issued_book)
         session.commit()
         flash("Book successfully returned!")
@@ -193,12 +195,14 @@ def transact(book_id):
         already_issued = session.query(Issued).filter_by(user_id=current_user.id).all()
         if(len(already_issued)!=5):
             issue = Issued(book_id=book_id, user_id=current_user.id)
+            book_obj.stocks-=1
             session.add(issue)
             session.commit()
             flash("Book successfully issued!")
         else:
             flash("You have reached your limit!")
-    return redirect(url_for('home'))
+    return redirect(request.referrer)
+
 
 @app.post("/notify/<book_id>")
 @login_required
@@ -212,7 +216,7 @@ def notify(book_id):
         session.add(notify_obj)
         session.commit()
         flash("You'll be notified when this book is in stock!")
-    return redirect(url_for('home'))
+    return redirect(request.referrer)
 
 
 @app.route("/search", methods=['GET','POST'])
@@ -236,3 +240,48 @@ def search():
             issue_status.append(status)
         return render_template('search.html',books=books,issue_status=issue_status)
     return render_template('search.html')
+
+
+@app.post("/add/book")
+def add_book():
+    """
+        Add a new book to the database. Only admin has access to do this
+    """
+    if current_user.is_admin:
+        form_data = request.form.to_dict()
+        new_book = Book(title=form_data['title'], author=form_data['author'], sem=form_data['sem'], subject=form_data['subject'], stocks=form_data['stocks'])
+        session.add(new_book)
+        session.commit()
+        flash("Successfully added a new book!")
+    else:
+        flash("Only admins have access to add a book!")
+    return redirect(url_for('home'))
+
+
+@app.post("/modify/<book_id>")
+def modify_stocks(book_id):
+    form_data = request.form.to_dict()
+    book = session.query(Book).filter_by(id=book_id).first()
+    if book is None:
+        flash("There is no book with that book id!")
+        return redirect(request.referrer)
+    if current_user.is_admin==False:
+        flash("Only admins have permission to modify stocks!")
+        return redirect(request.referrer)
+    if(book.stocks+int(form_data['stocks'])<0):
+        flash("Book stocks can't be negative!")
+    else:
+        orig_stocks = book.stocks
+        book.stocks+=int(form_data['stocks'])
+        session.commit()
+        if book.stocks!=0 and orig_stocks==0:
+            notify_objs = session.query(Notify).filter_by(book_id=book_id).all()
+            emails = []
+            for notify_obj in notify_objs:
+                emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
+                session.delete(notify_obj)
+            send_notify_email(emails,book,url_for('explore',sem=book.sem, _external=True))
+            session.commit()
+        flash("Stock updated!")
+    return redirect(request.referrer)
+        
