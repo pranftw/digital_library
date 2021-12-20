@@ -25,10 +25,21 @@ def load_user(user_id):
     user = session.query(User).filter_by(id=user_id).first()
     return user
 
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return redirect(url_for('login'))
+
 @app.context_processor
 def context_processor():
     return dict(current_user=current_user, enumerate=enumerate, request=request)
 
+@app.errorhandler(404)
+def error404(e):
+    return render_template('404.html')
+
+@app.errorhandler(500)
+def error500(e):
+    return render_template('500.html')
 
 @app.get("/")
 @app.get("/home")
