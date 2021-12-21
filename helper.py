@@ -52,7 +52,7 @@ def get_due_date(issue_date):
     return due_date_str, diff_days
 
 def validate_email(email):
-    pattern = re.compile(r'[a-zA-Z.0-9]+@bmsce.ac.in')
+    pattern = re.compile(r'[a-zA-Z.0-9]+@bmsce\.ac\.in')
     match = pattern.match(email)
     if match:
         return True
