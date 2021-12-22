@@ -85,6 +85,9 @@ def login():
             flash('<br>'.join(errors))
             return redirect(request.referrer)
         user = session.query(User).filter_by(email=form_data['email']).first()
+        if user is None:
+            flash("You aren't registered yet! Register now!")
+            return redirect(url_for('register'))
         hashed_form_pw = hash_password(form_data['password'])
         if(hashed_form_pw==user.password):
             flash("Successful login!")
