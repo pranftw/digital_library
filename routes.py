@@ -125,14 +125,24 @@ def register():
         if len(errors)!=0:
             flash('<br>'.join(errors))
             return redirect(request.referrer)
-        verification_token = secrets.token_hex(4)
-        send_verification_email(form_data['email'],verification_token)
-        verification_token_hash = hash_password(verification_token)
-        flask_session['verification_token_hash'] = verification_token_hash
-        flash("Verification token sent! Check your email!")
         flask_session['registration_data'] = form_data
-        return redirect(url_for('verify_token'))
+        return redirect(url_for('send_verification_token'),307)
     return render_template('register.html')
+
+
+@app.post("/send_verification_token")
+def send_verification_token():
+    registration_data = flask_session.get('registration_data')
+    if not(registration_data):
+        flash("You haven't started the registration process yet!")
+        return redirect(url_for('register'))
+    verification_token = secrets.token_hex(4)
+    send_verification_email(flask_session['registration_data']['email'],verification_token)
+    verification_token_hash = hash_password(verification_token)
+    flask_session['verification_token_hash'] = verification_token_hash
+    flash("Verification token sent! Check your email!")
+    return redirect(url_for('verify_token'))
+
 
 @app.route("/verify_token",methods=['GET','POST'])
 def verify_token():
