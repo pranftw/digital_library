@@ -1,12 +1,14 @@
 from flask import url_for, render_template, redirect, request, flash
+from flask import session as flask_session
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from __main__ import db, app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+import secrets
 
 session = db.session
 
 from models import *
-from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date, send_notify_email, validate_form_data
+from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date, send_notify_email, validate_form_data, send_verification_email
 
 def objs_to_dict(objs):
     objs_list = []
@@ -123,13 +125,36 @@ def register():
         if len(errors)!=0:
             flash('<br>'.join(errors))
             return redirect(request.referrer)
-        hashed_pw = hash_password(form_data['password'])
-        user = User(first_name=form_data['first_name'],last_name=form_data['last_name'],email=form_data['email'],password=hashed_pw)
+        verification_token = secrets.token_hex(4)
+        send_verification_email(form_data['email'],verification_token)
+        verification_token_hash = hash_password(verification_token)
+        flask_session['verification_token_hash'] = verification_token_hash
+        flash("Verification token sent! Check your email!")
+        flask_session['registration_data'] = form_data
+        return redirect(url_for('verify_token'))
+    return render_template('register.html')
+
+@app.route("/verify_token",methods=['GET','POST'])
+def verify_token():
+    registration_data = flask_session.get('registration_data')
+    if request.method=='POST':
+        form_data = request.form.to_dict()
+        session_verification_token_hash = flask_session.get('verification_token_hash')
+        if hash_password(form_data['token'])!=session_verification_token_hash:
+            flash("Invalid verification code!")
+            return redirect(request.referrer)
+        hashed_pw = hash_password(registration_data['password'])
+        user = User(first_name=registration_data['first_name'],last_name=registration_data['last_name'],email=registration_data['email'],password=hashed_pw)
         session.add(user)
         session.commit()
-        flash("Successfully registered!")
+        flash("Successfully registered! You can now login!")
+        flask_session.pop('registration_data')
+        flask_session.pop('verification_token_hash')
         return redirect(url_for('home'))
-    return render_template('register.html')
+    if not(registration_data):
+        flash("You haven't started the registration process yet!")
+        return redirect(url_for('register'))
+    return render_template('verify_token.html')
 
 
 @app.route("/reset_password", methods=['GET','POST'])
@@ -207,7 +232,7 @@ def explore(sem):
     else:
         flash("Invalid semester!")
         return redirect(url_for('home'))
-    return render_template('explore.html', books=books, issue_status=issue_status, num_issued=len(issued))
+    return render_template('explore.html', books=books, issue_status=issue_status, num_issued=len(issued), sem=sem)
 
 
 @app.post("/transact/<book_id>")

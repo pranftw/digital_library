@@ -29,6 +29,12 @@ def send_notify_email(emails, book_obj, home_url):
         """
         mail.send(msg)
 
+def send_verification_email(email, verification_token):
+    msg = Message('Verification code', sender='noreply@bmscelib.com', recipients=[email])
+    msg.body = f"""The verification code for your registration with BMSCE Lib is {verification_token}
+    """
+    mail.send(msg)
+
 def get_token(user):
     s = Serializer(SECRET_KEY, 300)
     token = s.dumps(f"{user.email}").decode('utf-8')

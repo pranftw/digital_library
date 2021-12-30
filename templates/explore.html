@@ -6,13 +6,14 @@
 {% block content %}
   <div style="height:20px;"></div>
     {% if current_user.is_admin==False %}
+      <h2>Semester {{ sem }}</h2>
       <h2>ISSUED: {{ num_issued }} / 5</h2>
     {% endif %}
+    <br><br><br>
     <div class="books_grid">
       {% for i,book in enumerate(books) %}
         <div class="book">
           <img class="book_img" src="{{ book.img_url }}">
-          <h5>ID: {{ book.id }}</h5>
           <h5>TITLE: {{ book.title }}</h5>
           <h5>AUTHOR: {{ book.author }}</h5>
           <h5>STOCKS: {{ book.stocks }}</h5>
