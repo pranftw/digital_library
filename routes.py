@@ -142,6 +142,9 @@ def register():
 
 @app.post("/send_verification_token")
 def send_verification_token():
+    """
+        Sends verification token for new users who are registering
+    """
     registration_data = flask_session.get('registration_data')
     if not(registration_data):
         flash("You haven't started the registration process yet!")
@@ -156,6 +159,9 @@ def send_verification_token():
 
 @app.route("/verify_token",methods=['GET','POST'])
 def verify_token():
+    """
+        Verifies the verification token sent to the email
+    """
     registration_data = flask_session.get('registration_data')
     if request.method=='POST':
         form_data = request.form.to_dict()
@@ -179,6 +185,9 @@ def verify_token():
 
 @app.route("/reset_password", methods=['GET','POST'])
 def reset_request():
+    """
+        Sends a request to reset the password
+    """
     if(request.method=='POST'):
         form_data = request.form.to_dict()
         errors = validate_form_data(form_data)
@@ -198,6 +207,9 @@ def reset_request():
 
 @app.route("/reset_password/<token>", methods=['GET','POST'])
 def reset_password(token):
+    """
+        Allows the user to reset the password after validating the reset_request token
+    """
     payload = validate_token(token)
     print(payload)
     if(payload):
@@ -231,6 +243,9 @@ def profile():
 @app.get("/explore")
 @login_required
 def explore_links():
+    """
+        Contains all the links to different senesters' explore pages
+    """
     return render_template('explore_links.html')
 
 
