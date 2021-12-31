@@ -5,10 +5,13 @@ from __main__ import db, app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import secrets
 
+
 session = db.session
+
 
 from models import *
 from helper import send_reset_email, hash_password, get_token, validate_token, get_due_date, send_notify_email, validate_form_data, send_verification_email
+
 
 def objs_to_dict(objs):
     objs_list = []
@@ -20,28 +23,35 @@ def objs_to_dict(objs):
         objs_list.append(obj_dict)
     return objs_list
 
+
 login_manager = LoginManager(app)
+
 
 @login_manager.user_loader
 def load_user(user_id):
     user = session.query(User).filter_by(id=user_id).first()
     return user
 
+
 @login_manager.unauthorized_handler
 def unauthorized_callback():
     return redirect(url_for('login'))
+
 
 @app.context_processor
 def context_processor():
     return dict(current_user=current_user, enumerate=enumerate, request=request)
 
+
 @app.errorhandler(404)
 def error404(e):
     return render_template('404.html')
 
+
 @app.errorhandler(500)
 def error500(e):
     return render_template('500.html')
+
 
 @app.get("/")
 @app.get("/home")
@@ -217,10 +227,12 @@ def profile():
     """
     return render_template('profile.html')
 
+
 @app.get("/explore")
 @login_required
 def explore_links():
     return render_template('explore_links.html')
+
 
 @app.get("/explore/<sem>")
 @login_required
@@ -286,6 +298,9 @@ def transact(book_id):
 @app.post("/notify/<book_id>")
 @login_required
 def notify(book_id):
+    """
+        Opt in for notifications of a book which is not in stock
+    """
     form_data = request.form.to_dict()
     errors = validate_form_data(form_data)
     if len(errors)!=0:
@@ -354,6 +369,9 @@ def add_book():
 
 @app.post("/modify/<book_id>")
 def modify_stocks(book_id):
+    """
+        Allows the admin to modify the stocks of a book
+    """
     form_data = request.form.to_dict()
     errors = validate_form_data(form_data)
     if len(errors)!=0:
@@ -383,8 +401,12 @@ def modify_stocks(book_id):
         flash("Stock updated!")
     return redirect(request.referrer)
         
+
 @app.post("/request_book")
 def request_book():
+    """
+        Request a book
+    """
     form_data = request.form.to_dict()
     errors = validate_form_data(form_data)
     if len(errors)!=0:
@@ -396,8 +418,12 @@ def request_book():
     flash("Successfully requested for the book!")
     return redirect(request.referrer)
 
+
 @app.post("/delete_request/<request_id>")
 def delete_request(request_id):
+    """
+        Delete a book request upon adding of a new book or if the book isn't available
+    """
     request_obj = session.query(Requests).filter_by(id=request_id).first()
     if request_obj:
         session.delete(request_obj)
