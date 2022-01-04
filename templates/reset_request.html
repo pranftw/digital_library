@@ -5,11 +5,17 @@
 
 {% block content %}
   <div style="height:20px;"></div>
-    <form method="post" action="{{ url_for('reset_request') }}">
-      <label for="email">Email</label><br>
-      <input name="email" type="email" required maxlength="45"><br>
-      <button class="font_prop submit_button">Submit</button>
-    </form>
+
+    <h2 class="font_prop headings">Reset Password</h2>
+
+    <div style="width:15em">
+      <form method="post" action="{{ url_for('reset_request') }}">
+        <label for="email">Email</label><br>
+        <input name="email" type="email" required maxlength="45"><br>
+        <div style="height:10px;"></div>
+        <button class="font_prop submit_button" style="float:right;margin-right:-0.5em;">SUBMIT</button>
+      </form>
+    </div>
   <div style="height:20px;"></div>
 {% endblock content %}
 

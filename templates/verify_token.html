@@ -5,16 +5,22 @@
 
 {% block content %}
   <div style="height:20px;"></div>
-    <form method="post">
-      <label for="token">Verification Token</label><br>
-      <input name="token" type="text" required maxlength="8"><br>
-      <button class="font_prop submit_button">Submit</button>
-    </form>
 
-    <br>
-    <form method="post" action="{{ url_for('send_verification_token') }}">
-      <button class="font_prop submit_button">Resend Token</button>
-    </form>
+    <h2 class="font_prop headings">Verify Token</h2>
+
+    <div style="width:15em">
+      <form method="post">
+        <label for="token">Verification Token</label><br>
+        <input name="token" type="text" required maxlength="8"><br>
+        <div style="height:10px;"></div>
+        <button class="font_prop submit_button" style="float:right;margin-right:-0.5em;">VERIFY TOKEN</button>
+      </form>
+
+      <div style="height:2.8em;"></div>
+      <form method="post" action="{{ url_for('send_verification_token') }}">
+        <button class="font_prop submit_button" style="float:right;margin-right:-0.5em;">RESEND TOKEN</button>
+      </form>
+    </div>
     
   <div style="height:20px;"></div>
 {% endblock content %}
