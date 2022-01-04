@@ -6,32 +6,36 @@
 {% block content %}
   <div style="height:20px;"></div>
 
-    <h2>SEARCH</h2>
+    <h2 class="font_prop headings">Search</h2>
 
-    <form method="post">
-      <label for="search"></label>
-      <input name="search" type="text" required maxlength="100">
-      <button>Submit</button>
-    </form>
+    <div style="display:flex;align-content:center;justify-content: center;">
+      <form method="post">
+        <label for="search"></label><br>
+        <input style="width:30em;height:2em;font-size: 1.5em;" name="search" type="text" required maxlength="100">&nbsp&nbsp&nbsp&nbsp
+        <button class="font_prop submit_button">SEARCH</button>
+      </form>
+    </div>
     <br>
 
     <div class="books_grid">
       {% for i,book in enumerate(books) %}
         <div class="book">
-          <img class="book_img" src="{{ book.img_url }}">
-          <h5>TITLE: {{ book.title }}</h5>
-          <h5>AUTHOR: {{ book.author }}</h5>
+          <img class="book_img" src="{{ book.img_url }}" onerror="this.style.opacity='0';">
+          <div style="height:6em;">
+            <h5 class="font_prop book_title">{{ book.title }}</h5>
+            <h5 class="font_prop book_author">{{ book.author }}</h5>
+          </div>
           {% if issue_status[i]==True %}
             <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
-              <button>RETURN</button>
+              <button class="font_prop submit_button">RETURN</button>
             </form>
           {% else %}
             {% if book.stocks!=0 %} 
               <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
-                <button>ISSUE</button>
+                <button class="font_prop submit_button">ISSUE</button>
               </form>
             {% else %}
-              <button>NOTIFY</button> 
+              <button class="font_prop submit_button">NOTIFY</button> 
             {% endif %}
           {% endif %}
         </div>

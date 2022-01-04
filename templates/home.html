@@ -10,98 +10,128 @@
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
       {% else %}
-        <a href="{{ url_for('search') }}">Search Books</a>
-        <a href="{{ url_for('explore_links') }}">Explore</a>
-        <br>
-        <br>
+        <div style="float:right;">
+          <h2 class="font_prop headings" style="display:inline;">Fine &nbsp</h2>
+          <h2 style="font-family:Roboto,sans-serif;font-weight:300;font-size:1.5em;display:inline;">₹</h2>
+          <h2 class="font_prop headings" style="font-weight:300;display:inline;">{{ fine }}</h2>
+        </div>
 
-        <h2>FINE TO BE PAID: {{ fine }}</h2>
+        <div style="height:2em;"></div>
 
-        <h2>ISSUED</h2>
+        <h2 class="font_prop headings">Issued</h2>
         <div class="books_grid">
           {% for i,book in enumerate(books) %}
-            <div class="book">
-              <img class="book_img" src="{{ book.img_url }}">
-              <h5>ID: {{ book.id }}</h5>
-              <h5>TITLE: {{ book.title }}</h5>
-              <h5>AUTHOR: {{ book.author }}</h5>
-              <h5>STOCKS: {{ book.stocks }}</h5>
-              <h5>DUE DATE: {{ due_dates[i] }}</h5>
+            <div class="book" style="height:26.4em">
+              <img class="book_img" src="{{ book.img_url }}" onerror="this.style.opacity='0';">
+              <div style="height:6em;">
+                <h5 class="font_prop book_title">{{ book.title }}</h5>
+                <h5 class="font_prop book_author">{{ book.author }}</h5>
+              </div>
+              <h5 class="font_prop book_title" style="display:inline;font-size:0.85em;">Due&nbsp</h5>
+              <h5 class="font_prop book_author" style="display:inline;font-size:0.85em;letter-spacing: -0.5px;">{{ due_dates[i] }}</h5>
               <form method="post" action="{{ url_for('transact',book_id=book['id']) }}">
-                <button>RETURN</button>
+                <button class="font_prop submit_button" style="display:inline;float:right;margin-top:-25px;">RETURN</button>
               </form>
             </div>
           {% endfor %}
         </div>
 
-        <h2>WATCHLIST</h2>
+        <div style="height:1em;"></div>
+
+        <h2 class="font_prop headings">Watchlist</h2>
         <div class="books_grid">
           {% for i,book in enumerate(watchlist_books) %}
-            <div class="book">
-              <img class="book_img" src="{{ book.img_url }}">
-              <h5>ID: {{ book.id }}</h5>
-              <h5>TITLE: {{ book.title }}</h5>
-              <h5>AUTHOR: {{ book.author }}</h5>
+            <div class="book" style="height:26.65em">
+              <img class="book_img" src="{{ book.img_url }}" onerror="this.style.opacity='0';">
+              <div style="height:6em;">
+                <h5 class="font_prop book_title">{{ book.title }}</h5>
+                <h5 class="font_prop book_author">{{ book.author }}</h5>
+              </div>
+              <form method="post", action="{{ url_for('denotify',book_id=book.id) }}">
+                <button class="font_prop submit_button" style="float:right;">REMOVE</button> 
+              </form>
               {% if book.stocks!=0 %}
                 <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
-                  <button>ISSUE</button>
+                  <button class="font_prop submit_button" style="float:right">ISSUE</button>
                 </form>
               {% endif %}
             </div>
           {% endfor %}
         </div>
 
-        <h2>REQUEST BOOK</h2>
-          <form method="post" action="{{ url_for('request_book') }}">
-            <label for="title">Title</label>
-            <input name="title" type="text" required maxlength="40"><br>
-            <label for="author">Author</label>
-            <input name="author" type="text" required maxlength="40"><br>
-            <button>SUBMIT</button>
-          </form>
+        <div style="height:1em;"></div>
+
+        <h2 class="font_prop headings">Request Book</h2>
+          <div style="width:15em">
+            <form method="post" action="{{ url_for('request_book') }}">
+              <label for="title">Title</label><br>
+              <input name="title" type="text" required maxlength="40"><br>
+              <label for="author">Author</label><br>
+              <input name="author" type="text" required maxlength="40"><br>
+              <div style="height:5px;"></div>
+              <button class="font_prop submit_button" style="float:right;margin-right:-0.5em;">SUBMIT</button>
+            </form>
+            <div style="height:1em;"></div>
+          </div>
 
       {% endif %}
     {% else %}
         {% if current_user.is_authenticated==True %}
-          <a href="{{ url_for('search') }}">Search Books</a>
-          <a href="{{ url_for('explore_links') }}">Explore</a>
-          <br>
-          <br>
-          
-          <h2>ADD BOOK</h2>
-          <form method="post" action="{{ url_for('add_book') }}">
-            <label for="title">Title</label>
-            <input name="title" type="text" required maxlength="40"><br>
-            <label for="author">Author</label>
-            <input name="author" type="text" required maxlength="40"><br>
-            <label for="subject">Subject</label>
-            <input name="subject" type="text" required maxlength="40"><br>
-            <label for="sem">Semester</label>
-            <input name="sem" type="text" required maxlength="40"><br>
-            <label for="stocks">Stocks</label>
-            <input name="stocks" type="number" required maxlength="40"><br>
-            <label for="img_url">Image URL</label>
-            <input name="img_url" type="text" required><br>
-            <button>SUBMIT</button>
-          </form>
+          <h2 class="font_prop headings">Add Book</h2>
+          <div style="width:15em">
+            <form method="post" action="{{ url_for('add_book') }}">
+              <label for="title">Title</label><br>
+              <input name="title" type="text" required maxlength="40"><br>
+              <label for="author">Author</label><br>
+              <input name="author" type="text" required maxlength="40"><br>
+              <label for="subject">Subject</label><br>
+              <input name="subject" type="text" required maxlength="40"><br>
+              <label for="sem">Semester</label><br>
+              <input name="sem" type="text" required maxlength="40"><br>
+              <label for="stocks">Stocks</label><br>
+              <input name="stocks" type="number" required maxlength="40"><br>
+              <label for="img_url">Image URL</label><br>
+              <input name="img_url" type="text" required><br>
+              <div style="height:10px;"></div>
+              <button class="font_prop submit_button" style="float:right;margin-right:-0.5em;">ADD BOOK</button>
+            </form>
+          </div>
 
-          <h2>REQUESTS</h2>
+          <div style="height:3em"></div>
+
+          <h2 class="font_prop headings">Requests</h2>
           <div class="books_grid">
             {% for br in book_requests %}
-              <div class="book">
-                <h5>TITLE: {{ br.title }}</h5>
-                <h5>AUTHOR: {{ br.author }}</h5>
+              <div class="book" style="height:7.9em;">
+                <h5 class="font_prop book_title">{{ br.title }}</h5>
+                <h5 class="font_prop book_author">{{ br.author }}</h5>
                 <br>
                 <form method="post" action="{{ url_for('delete_request',request_id=br.id) }}">
-                  <button>DELETE</button>
+                  <button class="font_prop submit_button" style="float:right;">DELETE</button>
                 </form>
               </div>
             {% endfor %}
           </div>
 
         {% else %}
-          <a href="{{ url_for('login') }}">Login</a>
-          <a href="{{ url_for('register') }}">Register</a>
+          <div class="entry_grid">
+            <div class="entry_img_div" style='background-image: url("{{ url_for("static",filename="images/library.jpg") }}");background-size:cover;'>
+            </div>
+            <div class="entry_info_div">
+              <div style="height:1em"></div>
+              <div class="display:flex;align-items:center;justify-content:center;">
+                <h5 class="font_prop" style="font-size:1.2em;font-weight:500;color:#888888;">
+                  Presenting, a one stop solution for all the hassles you face at the library. A completely digital library from which you can issue or return books at the click of a button in the CSE Department! Get Started! 
+                </h5>
+                <div style="height:1em"></div>
+                <div style="display:flex;align-items:center;justify-content: center;">
+                  <a href="{{ url_for('login') }}"><button class="font_prop submit_button">LOGIN</button></a>
+                  &nbsp&nbsp&nbsp&nbsp
+                  <a href="{{ url_for('register') }}"><button class="font_prop submit_button">REGISTER</button></a>
+                </div>
+              </div>
+            </div>
+          </div>
         {% endif %}
     {% endif %}
   <div style="height:20px;"></div>

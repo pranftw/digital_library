@@ -1,3 +1,40 @@
+.font_prop{
+    font-family:Poppins,sans-serif;
+    font-weight:600;
+    font-size:2em;
+    color:black;
+    letter-spacing: -0.5px;
+}
+
+button{
+    border:none;
+}
+
+button:hover{
+    cursor: pointer;
+}
+
+a{
+    text-decoration: none;
+    color:inherit;
+}
+
+.flash_message{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    height:auto;
+    width:25%;
+    background-color:#f4f4f4;
+    text-align:center;
+    margin:1em;
+    padding:1em;
+    font-size:1em;
+    margin-left:auto;
+    margin-right:auto;
+    font-weight: 500;
+}
+
 .books_grid{
     display: grid;
     grid-gap: 20px;
@@ -6,19 +43,133 @@
 }
 
 .book{
-    height:auto;
+    height:26.6em;
     width:auto;
-    padding:10px;
-    background-color: #dbdbdb;
+    padding:8px;
+    background-color: #f4f4f4;
 }
 
 .book_img{
     display:flex;
     align-items: center;
     align-content: center;
-    height:15em;
-    width:10em;
+    height:18em;
+    width:100%;
     background-size:cover;
     margin:auto;
-    padding:5px;
+}
+
+.book_title{
+    font-weight:500;
+    font-size:1em;
+    margin-top:10px;
+    line-height:1.2em;
+    letter-spacing:-0.3px;
+}
+
+.book_author{
+    font-weight:400;
+    font-size:0.9em;
+    margin-top:-25px;
+    letter-spacing:-0.3px;
+}
+
+.submit_button{
+    height:2em;
+    width:auto;
+    background-color: black;
+    color:white;
+    padding:0.1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    font-size:0.95em;
+    font-weight:500;
+}
+
+.headings{
+    font-size:1.5em;
+    letter-spacing: -1px;
+    margin:0;
+    margin-top:10px;
+    margin-bottom:10px;
+    padding:0;
+}
+
+label{
+    font-family:Poppins,sans-serif;
+    font-weight:400;
+    font-size:1.1em;
+    letter-spacing:-0.5px;
+}
+
+input{
+    font-family:Poppins,sans-serif;
+    font-weight:400;
+    font-size:1em;
+    height:2em;
+    width:15em;
+    background-color:#f4f4f4;
+    border:none;
+    padding:0;
+    margin:0;
+    margin-bottom:5px;
+    padding-left:0.5em;
+}
+
+.explore_links_div {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+}
+
+.explore_link {
+    height: 16em;
+    width: 16em;
+    background-color: black;
+}
+
+.explore_link_sem {
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 9em;
+    color: white;
+    text-align: right;
+    padding-right: 0.5em;
+}
+
+.nav_bar_div{
+    display:flex;
+    height:2.5em;
+    background-color: #f4f4f4;
+    width:100%;
+}
+
+.nav_bar_element{
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 1em;
+    padding:0.5em;
+    padding-left:1em;
+    padding-right:1em;
+    letter-spacing: -0.1px;
+}
+
+.header{
+    height:3em;
+    width:100%;
+}
+
+.entry_grid{
+    display:grid;
+    grid-template-columns: repeat(20,1fr);
+    height:25em;
+}
+
+.entry_img_div{
+    grid-column:1/12;
+}
+
+.entry_info_div{
+    grid-column:13/20;
 }

@@ -231,15 +231,6 @@ def reset_password(token):
     return render_template('reset_password.html')
 
 
-@app.get("/profile")
-@login_required
-def profile():
-    """
-        Has functionalities to reset password, display all the information about the user
-    """
-    return render_template('profile.html')
-
-
 @app.get("/explore")
 @login_required
 def explore_links():
@@ -321,7 +312,7 @@ def notify(book_id):
     if len(errors)!=0:
         flash('<br>'.join(errors))
         return redirect(request.referrer)
-    notify_obj = session.query(Notify).filter_by(book_id=book_id).first()
+    notify_obj = session.query(Notify).filter_by(user_id=current_user.id,book_id=book_id).first()
     if notify_obj:
         flash("You have already opted to get notified for this book!")
     else:
@@ -329,6 +320,27 @@ def notify(book_id):
         session.add(notify_obj)
         session.commit()
         flash("You'll be notified when this book is in stock!")
+    return redirect(request.referrer)
+
+
+@app.post("/denotify/<book_id>")
+@login_required
+def denotify(book_id):
+    """
+        Opt out of notifications for a book
+    """
+    form_data = request.form.to_dict()
+    errors = validate_form_data(form_data)
+    if len(errors)!=0:
+        flash('<br>'.join(errors))
+        return redirect(request.referrer)
+    notify_obj = session.query(Notify).filter_by(user_id=current_user.id,book_id=book_id).first()
+    if notify_obj:
+        session.delete(notify_obj)
+        session.commit()
+        flash("Successfully opted out of getting notified for this book!")
+    else:
+        flash("You haven't opted to get notifications for this book!")
     return redirect(request.referrer)
 
 
@@ -399,11 +411,12 @@ def modify_stocks(book_id):
     if current_user.is_admin==False:
         flash("Only admins have permission to modify stocks!")
         return redirect(request.referrer)
-    if(book.stocks+int(form_data['stocks'])<0):
+    form_data_stocks = int(form_data['stocks'])
+    if(book.stocks+form_data_stocks<0):
         flash("Book stocks can't be negative!")
     else:
         orig_stocks = book.stocks
-        book.stocks+=int(form_data['stocks'])
+        book.stocks+=form_data_stocks
         session.commit()
         if book.stocks!=0 and orig_stocks==0:
             notify_objs = session.query(Notify).filter_by(book_id=book_id).all()

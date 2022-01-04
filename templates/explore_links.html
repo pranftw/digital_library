@@ -5,9 +5,17 @@
 
 {% block content %}
   <div style="height:20px;"></div>
-  {% for i in range(3,9) %}
-    <a href="{{ url_for('explore',sem=i) }}">Sem {{ i }}</a>
-  {% endfor %}
+  <div class="explore_links_div">
+    {% for i in range(3,9) %}
+      <a href="{{ url_for('explore',sem=i) }}">
+        <div class="explore_link">
+            <div class="explore_link_sem">
+                {{ i }}
+            </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
   <div style="height:20px;"></div>
 {% endblock content %}
 

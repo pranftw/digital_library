@@ -6,14 +6,14 @@
 {% block content %}
   <div style="height:20px;"></div>
     <form method="post">
-      <label for="token">Verification Token</label>
+      <label for="token">Verification Token</label><br>
       <input name="token" type="text" required maxlength="8"><br>
-      <button>Submit</button>
+      <button class="font_prop submit_button">Submit</button>
     </form>
 
     <br>
     <form method="post" action="{{ url_for('send_verification_token') }}">
-      <button>Resend Token</button>
+      <button class="font_prop submit_button">Resend Token</button>
     </form>
     
   <div style="height:20px;"></div>

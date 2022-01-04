@@ -2,29 +2,69 @@
 
 <html>
   <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
     {% block css_imports %}
     {% endblock css_imports %}
   </head>
 
   <body>
-    <a href="{{ url_for('home') }}">HOME</a>
     {% autoescape false %}
       {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}
-            {{ message }}
+            <div class="font_prop flash_message">
+              {{ message }}
+            </div>
           {% endfor %}
         {% endif %}
       {% endwith %}
     {% endautoescape %}
-    {% if(current_user.is_authenticated) %}
-      <div style="float: right;">
-        <h5>Welcome, {{ current_user.first_name }}<h5>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+
+    {% if current_user.is_authenticated %}
+      <div class="header">
+        <a href="{{ url_for('home') }}"><h5 class="font_prop" style="display:inline;font-size:1.5em;">CSE Library</h5></a>
+        <div style="float:right;margin-top:5px;">
+          <h5 class="font_prop" style="display:inline;font-size:1em;">Welcome,&nbsp</h5>
+          <h5 class="font_prop" style="display:inline;font-weight:300;font-size:1em;">{{ current_user.first_name }}</h5>
+        </div>
+      </div>
+
+      <div class="nav_bar_div">
+          <a href="{{ url_for('home') }}">
+            <div class="nav_bar_element">
+              HOME
+            </div>
+          </a>
+
+          <a href="{{ url_for('search') }}">
+            <div class="nav_bar_element">
+              SEARCH
+            </div>
+          </a>
+
+          <a href="{{ url_for('explore_links') }}">
+            <div class="nav_bar_element">
+              EXPLORE
+            </div>
+          </a>
+
+          <a href="{{ url_for('logout') }}">
+            <div class="nav_bar_element">
+              LOGOUT
+            </div>
+          </a>
+
+      </div>
+    {% else %}
+      <div class="header">
+        <a href="{{ url_for('home') }}"><h5 class="font_prop" style="display:inline;font-size:1.5em;">CSE Library</h5></a>
       </div>
     {% endif %}
+
     {% block content %}
     {% endblock content %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>

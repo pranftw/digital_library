@@ -6,38 +6,48 @@
 {% block content %}
   <div style="height:20px;"></div>
     {% if current_user.is_admin==False %}
-      <h2>Semester {{ sem }}</h2>
-      <h2>ISSUED: {{ num_issued }} / 5</h2>
+      <div style="float:right;">
+        <h2 class="font_prop headings" style="display: inline;">Issued&nbsp</h2>
+        <h2 class="font_prop headings" style="display: inline;font-weight:300;">{{ num_issued }} of 5</h2>
+      </div>
     {% endif %}
-    <br><br><br>
+    <h2 class="font_prop headings" style="display:inline;">Semester&nbsp</h2>
+    <h2 class="font_prop headings" style="display:inline;font-weight:300;">{{ sem }}</h2>
+    <div style="height:1em;"></div>
     <div class="books_grid">
       {% for i,book in enumerate(books) %}
-        <div class="book">
-          <img class="book_img" src="{{ book.img_url }}">
-          <h5>TITLE: {{ book.title }}</h5>
-          <h5>AUTHOR: {{ book.author }}</h5>
-          <h5>STOCKS: {{ book.stocks }}</h5>
+        {% if current_user.is_admin==False %}
+          <div class="book">
+        {% else %}
+          <div class="book" style="height:31.2em;">
+        {% endif %}
+          <img class="book_img" src="{{ book.img_url }}" onerror="this.style.opacity='0';">
+          <div style="height:6em;">
+            <h5 class="font_prop book_title">{{ book.title }}</h5>
+            <h5 class="font_prop book_author">{{ book.author }}</h5>
+          </div>
           {% if current_user.is_admin==False %}
             {% if issue_status[i]==True %}
               <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
-                <button>RETURN</button>
+                <button class="font_prop submit_button" style="float:right;">RETURN</button>
               </form>
             {% else %}
               {% if book.stocks!=0 %} 
                 <form method="post" action="{{ url_for('transact',book_id=book.id) }}">
-                  <button>ISSUE</button>
+                  <button class="font_prop submit_button" style="float:right;">ISSUE</button>
                 </form>
               {% else %}
                 <form method="post", action="{{ url_for('notify',book_id=book.id) }}">
-                  <button>NOTIFY</button> 
+                  <button class="font_prop submit_button" style="float:right;">NOTIFY</button> 
                 </form>
               {% endif %}
             {% endif %}
           {% else %}
             <form method="post" action="{{ url_for('modify_stocks',book_id=book.id) }}">
-              <label for="stocks">ADD / DELETE stocks</label>
-              <input name="stocks" type="text"><br><br>
-              <button>MODIFY STOCKS</button>
+              <label for="stocks" style="font-size:1em;">Add / Remove Stocks</label><br>
+              <input style="width:14.5em;background-color:white;" name="stocks" type="number" required><br>
+              <div style="height:10px;"></div>
+              <button class="font_prop submit_button" style="float:right;">MODIFY STOCKS</button>
             </form>
           {% endif %}
         </div>
