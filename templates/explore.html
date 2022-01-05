@@ -8,11 +8,11 @@
     {% if current_user.is_admin==False %}
       <div style="float:right;">
         <h2 class="font_prop headings" style="display: inline;">Issued&nbsp</h2>
-        <h2 class="font_prop headings" style="display: inline;font-weight:300;">{{ num_issued }} of 5</h2>
+        <h2 class="font_prop headings" style="display: inline;font-weight:300;font-size:1.25em;">{{ num_issued }} of 5</h2>
       </div>
     {% endif %}
     <h2 class="font_prop headings" style="display:inline;">Semester&nbsp</h2>
-    <h2 class="font_prop headings" style="display:inline;font-weight:300;">{{ sem }}</h2>
+    <h2 class="font_prop headings" style="display:inline;font-weight:300;font-size:1.35em;">{{ sem }}</h2>
     <div style="height:1em;"></div>
     <div class="books_grid">
       {% for i,book in enumerate(books) %}

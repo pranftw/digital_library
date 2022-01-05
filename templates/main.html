@@ -6,6 +6,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
     {% block css_imports %}
     {% endblock css_imports %}
@@ -26,10 +27,11 @@
 
     {% if current_user.is_authenticated %}
       <div class="header">
-        <a href="{{ url_for('home') }}"><h5 class="font_prop" style="display:inline;font-size:1.5em;">CSE Library</h5></a>
+        <div style="height:0.5em;"></div>
+        <a href="{{ url_for('home') }}"><h5 class="font_prop" style="display:inline;font-size:1.5em;padding-left:0.5em;letter-spacing:-1px;">CSE Library</h5></a>
         <div style="float:right;margin-top:5px;">
-          <h5 class="font_prop" style="display:inline;font-size:1em;">Welcome,&nbsp</h5>
-          <h5 class="font_prop" style="display:inline;font-weight:300;font-size:1em;">{{ current_user.first_name }}</h5>
+          <h5 class="font_prop" style="display:inline;font-weight:300;font-size:1em;">Welcome,&nbsp</h5>
+          <h5 class="font_prop" style="display:inline;font-size:1em;padding-right:1em;font-weight:500;">{{ current_user.first_name }}</h5>
         </div>
       </div>
 
@@ -61,12 +63,16 @@
       </div>
     {% else %}
       <div class="header">
-        <a href="{{ url_for('home') }}"><h5 class="font_prop" style="display:inline;font-size:1.5em;">CSE Library</h5></a>
+        <div style="height:0.5em;"></div>
+        <a href="{{ url_for('home') }}"><h5 class="font_prop" style="display:inline;font-size:1.5em;padding-left:0.5em;letter-spacing:-1px;">CSE Library</h5></a>
       </div>
     {% endif %}
 
-    {% block content %}
-    {% endblock content %}
+    <div style="margin-left:1em;margin-right:1em;">
+      {% block content %}
+      {% endblock content %}
+    </div>
+
     <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block js_imports %}
     {% endblock js_imports %}

@@ -10,15 +10,12 @@
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
       {% else %}
-        <div style="float:right;">
-          <h2 class="font_prop headings" style="display:inline;">Fine &nbsp</h2>
-          <h2 style="font-family:Roboto,sans-serif;font-weight:300;font-size:1.5em;display:inline;">₹</h2>
-          <h2 class="font_prop headings" style="font-weight:300;display:inline;">{{ fine }}</h2>
-        </div>
 
-        <div style="height:2em;"></div>
-
-        <h2 class="font_prop headings">Issued</h2>
+        <h2 class="font_prop headings" style="display:inline;" id="issued">Issued</h2>
+        <h2 class="font_prop headings" style="font-weight:300;display:inline;font-size:1.25em;float:right;margin-top:0.20em;">{{ fine }}</h2>
+        <h2 style="font-family:Roboto,sans-serif;font-weight:300;font-size:1.25em;display:inline;float:right;margin-top:0.35em;">₹</h2>        
+        <h2 class="font_prop headings" style="display:inline;float:right;margin-top:-0.025em;">Fine&nbsp&nbsp</h2>
+        <div style="height:1em;"></div>
         <div class="books_grid">
           {% for i,book in enumerate(books) %}
             <div class="book" style="height:26.4em">
@@ -38,7 +35,8 @@
 
         <div style="height:1em;"></div>
 
-        <h2 class="font_prop headings">Watchlist</h2>
+        <h2 class="font_prop headings" id="watchlist">Watchlist</h2>
+        <div style="height:1em;"></div>
         <div class="books_grid">
           {% for i,book in enumerate(watchlist_books) %}
             <div class="book" style="height:26.65em">
