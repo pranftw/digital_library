@@ -19,7 +19,7 @@
         {% if current_user.is_admin==False %}
           <div class="book">
         {% else %}
-          <div class="book" style="height:31.2em;">
+          <div class="book" style="height:33.1em;">
         {% endif %}
           <img class="book_img" src="{{ book.img_url }}" onerror="this.style.opacity='0';">
           <div style="height:6em;">
@@ -43,10 +43,14 @@
               {% endif %}
             {% endif %}
           {% else %}
+            <h5 class="font_prop book_title" style="display:inline;font-size:0.85em;">Stocks&nbsp</h5>
+            <h5 class="font_prop book_author" style="display:inline;font-size:0.85em;letter-spacing: -0.5px;">{{ book.stocks }}</h5>
+            <div style="height:1em"></div>
             <form method="post" action="{{ url_for('modify_stocks',book_id=book.id) }}">
-              <label for="stocks" style="font-size:1em;">Add / Remove Stocks</label><br>
-              <input style="width:14.5em;background-color:white;" name="stocks" type="number" required><br>
-              <div style="height:10px;"></div>
+              <h5 class="font_prop book_title" style="display:inline;font-size:0.95em;">Add / Delete stocks</h5><br>
+              <div style="height:0.4em"></div>
+              <input style="width:14.5em;" name="stocks" type="number" required><br>
+              <div style="height:5px;"></div>
               <button class="font_prop submit_button" style="float:right;">MODIFY STOCKS</button>
             </form>
           {% endif %}

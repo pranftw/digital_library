@@ -18,14 +18,14 @@ def send_reset_email(email, reset_url):
     """
     mail.send(msg)
 
-def send_notify_email(emails, book_obj, home_url):
+def send_notify_email(emails, book_obj, url):
     if len(emails)!=0:
         msg = Message('Book available notification!', sender='noreply@bmscelib.com',recipients=emails)
         msg.body = f"""The book you requested {book_obj.title} by {book_obj.author} is now available!
         Number of stocks left are {book_obj.stocks}.
         Click the following link to be able to issue the book!
         
-        {home_url}
+        {url}
         """
         mail.send(msg)
 

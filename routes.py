@@ -270,6 +270,9 @@ def transact(book_id):
         Book can be issued or returned
         If issued, it returns, else it issues it appropriate links are set up
     """
+    if current_user.is_admin==True:
+        flash("Admin can't issue books!")
+        return redirect(request.referrer)
     issued_book = session.query(Issued).filter_by(book_id=book_id).first()
     book_obj = session.query(Book).filter_by(id=book_id).first()
     if book_obj is None:
@@ -284,7 +287,7 @@ def transact(book_id):
             for notify_obj in notify_objs:
                 emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
                 session.delete(notify_obj)
-            send_notify_email(emails,book_obj,url_for('explore',sem=book_obj.sem, _external=True))
+            send_notify_email(emails,book_obj,url_for('search',search=book_obj.title,book_id=book_obj.id,_external=True))
         session.delete(issued_book)
         session.commit()
         flash("Book successfully returned!")
@@ -350,8 +353,11 @@ def search():
     """
         Search for a book
     """
-    if request.method=='POST':
-        form_data = request.form.to_dict()
+    if request.method=='POST' or request.args.get('search'):
+        if request.method=='POST':
+            form_data = request.form.to_dict()
+        else:
+            form_data = request.args.to_dict()
         errors = validate_form_data(form_data)
         if len(errors)!=0:
             flash('<br>'.join(errors))
@@ -359,6 +365,8 @@ def search():
         issued = session.query(Issued).filter_by(user_id=current_user.id).all()
         issue_status = []
         books = session.query(Book).filter(Book.title.like("%" + form_data['search'] + "%"))
+        if form_data.get('book_id'):
+            books = books.filter_by(id=form_data.get('book_id'))
         books = books.order_by(Book.title).all()
         for i in range(len(books)):
             status = False
@@ -424,7 +432,7 @@ def modify_stocks(book_id):
             for notify_obj in notify_objs:
                 emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
                 session.delete(notify_obj)
-            send_notify_email(emails,book,url_for('explore',sem=book.sem, _external=True))
+            send_notify_email(emails,book,url_for('search',search=book.title,book_id=book.id,_external=True))
             session.commit()
         flash("Stock updated!")
     return redirect(request.referrer)

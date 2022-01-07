@@ -5,20 +5,22 @@
 
 {% block content %}
   <div style="height:20px;"></div>
-    <h2 class="font_prop headings">Login</h2>
-    <div style="width:15em">
-      <form method="post" action="{{ url_for('login') }}">
-        <label for="email">Email</label><br>
-        <input name="email" type="email" required maxlength="45"><br>
-        <label for="password">Password</label><br>
-        <input name="password" type="password" required minlength="5"><br>
-        <label for="remember">Remember Me</label>
-        <input style="margin-top:-10px" name="remember" type="checkbox" checked><br>
-        <div style="height:5px;"></div>
-        <a class="font_prop" style="font-size:1em;color:#0b6ca3;font-weight:500;" href="{{ url_for('reset_request') }}">Forgot password?</a>
-        <div style="height:10px;"></div>
-        <button class="font_prop submit_button" style="float:right;margin-right:-0.5em;">LOGIN</button>
-      </form>
+    <h2 class="font_prop headings" style="text-align: center;">Login</h2>
+    <div style="display:flex;align-items:center;justify-content:center;">
+      <div style="width:15em">
+        <form method="post" action="{{ url_for('login') }}">
+          <label for="email">Email</label><br>
+          <input name="email" type="email" required maxlength="45"><br>
+          <label for="password">Password</label><br>
+          <input name="password" type="password" required minlength="5"><br>
+          <label for="remember">Remember Me</label>
+          <input style="margin-top:-10px" name="remember" type="checkbox" checked><br>
+          <div style="height:5px;"></div>
+          <a class="font_prop" style="font-size:1em;color:#0b6ca3;font-weight:500;" href="{{ url_for('reset_request') }}">Forgot password?</a>
+          <div style="height:10px;"></div>
+          <button class="font_prop submit_button" style="float:right;margin-right:-0.5em;">LOGIN</button>
+        </form>
+      </div>
     </div>
   <div style="height:20px;"></div>
 {% endblock content %}

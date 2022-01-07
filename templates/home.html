@@ -76,6 +76,7 @@
     {% else %}
         {% if current_user.is_authenticated==True %}
           <h2 class="font_prop headings">Add Book</h2>
+          <div style="height:0.5em;"></div>
           <div style="width:15em">
             <form method="post" action="{{ url_for('add_book') }}">
               <label for="title">Title</label><br>
@@ -98,6 +99,7 @@
           <div style="height:3em"></div>
 
           <h2 class="font_prop headings">Requests</h2>
+          <div style="height:0.5em;"></div>
           <div class="books_grid">
             {% for br in book_requests %}
               <div class="book" style="height:7.9em;">
@@ -110,24 +112,66 @@
               </div>
             {% endfor %}
           </div>
-
         {% else %}
-          <div class="entry_grid">
-            <div class="entry_img_div" style='background-image: url("{{ url_for("static",filename="images/library.jpg") }}");background-size:cover;'>
-            </div>
-            <div class="entry_info_div">
-              <div style="height:1em"></div>
-              <div class="display:flex;align-items:center;justify-content:center;">
-                <h5 class="font_prop" style="font-size:1.2em;font-weight:500;color:#888888;">
-                  Presenting, a one stop solution for all the hassles you face at the library. A completely digital library from which you can issue or return books at the click of a button in the CSE Department! Get Started! 
+          <div style="height:1em;"></div>
+          <h2 class="font_prop headings" style="text-align: center;">Features</h2>
+          <div style="height:2em;"></div>
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <div class="feature_grid">
+              <div class="feature">
+                <h5 class="font_prop feature_heading">
+                  Issue / Return
                 </h5>
-                <div style="height:1em"></div>
-                <div style="display:flex;align-items:center;justify-content: center;">
-                  <a href="{{ url_for('login') }}"><button class="font_prop submit_button">LOGIN</button></a>
-                  &nbsp&nbsp&nbsp&nbsp
-                  <a href="{{ url_for('register') }}"><button class="font_prop submit_button">REGISTER</button></a>
-                </div>
+                <h5 class="font_prop feature_desc">
+                  Issue or Return books at the click of a button
+                </h5>
               </div>
+      
+              <div class="feature">
+                <h5 class="font_prop feature_heading">
+                  Search
+                </h5>
+                <h5 class="font_prop feature_desc">
+                  Get faster access to books through search
+                </h5>
+              </div>
+      
+              <div class="feature">
+                <h5 class="font_prop feature_heading">
+                  Explore
+                </h5>
+                <h5 class="font_prop feature_desc">
+                  Browse the entire catalog organized by semester
+                </h5>
+              </div>
+      
+              <div class="feature">
+                <h5 class="font_prop feature_heading">
+                  Get Notified
+                </h5>
+                <h5 class="font_prop feature_desc">
+                  Book out of stock? Get an email notification once it is back in stock
+                </h5>
+              </div>
+      
+              <div class="feature">
+                <h5 class="font_prop feature_heading">
+                  Fine Calculator
+                </h5>
+                <h5 class="font_prop feature_desc">
+                  Fine calculator automatically calculates fine for you
+                </h5>
+              </div>
+      
+              <div class="feature">
+                <h5 class="font_prop feature_heading">
+                  Manage Stocks
+                </h5>
+                <h5 class="font_prop feature_desc">
+                  Admin can manage stocks, add new books
+                </h5>
+              </div>
+      
             </div>
           </div>
         {% endif %}
