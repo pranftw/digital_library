@@ -15,3 +15,6 @@ class Notify(db.Model):
 
 class Requests(db.Model):
     __tablename__='requests'
+
+class ToBeApproved(db.Model):
+    __tablename__='to_be_approved'

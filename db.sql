@@ -5,6 +5,7 @@ create table books(id int primary key auto_increment, title varchar(100), author
 create table issued(id int primary key auto_increment, book_id int, user_id int, date datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, foreign key(book_id) references books(id) on delete cascade on update cascade, foreign key(user_id) references users(id) on delete cascade on update cascade);
 create table notify(id int primary key auto_increment,book_id int, user_id int, foreign key(book_id) references books(id) on delete cascade on update cascade, foreign key(user_id) references users(id) on delete cascade on update cascade);
 create table requests(id int primary key auto_increment, title varchar(100), author varchar(100));
+create table to_be_approved(id int primary key auto_increment, book_id int, user_id int, type_approval varchar(10), foreign key(book_id) references books(id) on delete cascade on update cascade, foreign key(user_id) references users(id) on delete cascade on update cascade);
 
 insert into books(author,title,stocks,img_url,sem,subject) values
 ('Carl Hamacher Zvonko Vranesic ','Computer Organization And Embedded Systems',0,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHtUefN2X_Fv0Kvk7g5a71vy4KhMoj-KxhGw&usqp=CAU',3,'Computer Organization and Architecture'),

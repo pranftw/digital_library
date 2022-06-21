@@ -59,6 +59,27 @@
 
         <div style="height:1em;"></div>
 
+        <h2 class="font_prop headings">Waiting for Approval</h2>
+        <div style="height:1em;"></div>
+        <div class="books_grid">
+          {% for i,book in enumerate(to_be_approved_books) %}
+            <div class="book" style="height:26.65em">
+              <img class="book_img" src="{{ book[0].img_url }}" onerror="this.style.opacity='0';">
+              <div style="height:6em;">
+                <h5 class="font_prop book_title">{{ book[0].title }}</h5>
+                <h5 class="font_prop book_author">{{ book[0].author }}</h5>
+                <div style="height:0.5em;"></div>
+                <h5 class="font_prop book_author">{{ book[1].upper() }}</h5>
+              </div>
+              <form method="post", action="{{ url_for('remove_approval_request',book_id=book[0].id) }}">
+                <button class="font_prop submit_button" style="float:right;">REMOVE</button> 
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div style="height:1em;"></div>
+
         <h2 class="font_prop headings">Request Book</h2>
           <div style="width:15em">
             <form method="post" action="{{ url_for('request_book') }}">
@@ -110,6 +131,51 @@
                   <button class="font_prop submit_button" style="float:right;">DELETE</button>
                 </form>
               </div>
+            {% endfor %}
+          </div>
+
+          <div style="height:3em"></div>
+
+          <h2 class="font_prop headings">Approve Issue Requests</h2>
+          <div style="height:0.5em;"></div>
+          <div>
+            {% for air in approval_issue_requests %}
+              <div class="font_prop" style="display:flex;column-gap:20px;font-size:1em;font-weight: 500;">
+                <div>
+                  {{get_user(air.user_id).first_name}}
+                </div>
+                <div>
+                  {{get_book(air.book_id).title}}
+                </div>
+                <div>
+                  <form method="post" action="{{ url_for('approve',book_id=air.book_id,user_id=air.user_id,type_approval='issue') }}">
+                    <button class="font_prop submit_button">APPROVE</button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div style="height:3em"></div>
+
+          <h2 class="font_prop headings">Approve Return Requests</h2>
+          <div style="height:0.5em;"></div>
+          <div>
+            {% for arr in approval_return_requests %}
+              <div class="font_prop" style="display:flex;column-gap:20px;font-size:1em;font-weight: 500;">
+                <div>
+                  {{get_user(arr.user_id).first_name}}
+                </div>
+                <div>
+                  {{get_book(arr.book_id).title}}
+                </div>
+                <div>
+                  <form method="post" action="{{ url_for('approve',book_id=arr.book_id,user_id=arr.user_id,type_approval='return') }}">
+                    <button class="font_prop submit_button">APPROVE</button>
+                  </form>
+                </div>
+              </div>
+              <div style="height:20px"></div>
             {% endfor %}
           </div>
         {% else %}

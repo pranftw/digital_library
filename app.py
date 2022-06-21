@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = conn_str
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # EMAIL CONFIG
-app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_SERVER'] = 'smtp-mail.outlook.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = EMAIL_USERNAME

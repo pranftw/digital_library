@@ -2,7 +2,6 @@ from flask import url_for, render_template, redirect, request, flash
 from flask import session as flask_session
 from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from __main__ import db, app
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import secrets
 
 
@@ -53,6 +52,13 @@ def error500(e):
     return render_template('500.html')
 
 
+def get_user(user_id):
+    return session.query(User).filter_by(id=user_id).first()
+
+def get_book(book_id):
+    return session.query(Book).filter_by(id=book_id).first()
+
+
 @app.get("/")
 @app.get("/home")
 def home():
@@ -76,10 +82,16 @@ def home():
 
         notify = session.query(Notify).filter_by(user_id=current_user.id).all()
         book_requests = session.query(Requests).all()
+        approval_requests = session.query(ToBeApproved).filter_by(user_id=current_user.id).all()
+        approval_issue_requests = session.query(ToBeApproved).filter_by(type_approval='issue').all()
+        approval_return_requests = session.query(ToBeApproved).filter_by(type_approval='return').all()
         watchlist_books = []
         for noti in notify:
             watchlist_books.append(session.query(Book).filter_by(id=noti.book_id).first())
-        return render_template('home.html', books=books, due_dates=due_dates, fine=fine, watchlist_books=watchlist_books, book_requests=book_requests)
+        to_be_approved_books = []
+        for appr in approval_requests:
+            to_be_approved_books.append((session.query(Book).filter_by(id=appr.book_id).first(),appr.type_approval))
+        return render_template('home.html', books=books, due_dates=due_dates, fine=fine, watchlist_books=watchlist_books, to_be_approved_books=to_be_approved_books,book_requests=book_requests, approval_issue_requests=approval_issue_requests, approval_return_requests=approval_return_requests, get_user=get_user, get_book=get_book)
     else:
         return render_template('home.html')
 
@@ -279,28 +291,90 @@ def transact(book_id):
         flash("Invalid book id!")
         return redirect(request.referrer)
     if issued_book: # RETURN IT
-        orig_stocks = book_obj.stocks
-        book_obj.stocks+=1
-        if book_obj.stocks!=0 and orig_stocks==0:
-            notify_objs = session.query(Notify).filter_by(book_id=book_id).all()
-            emails = []
-            for notify_obj in notify_objs:
-                emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
-                session.delete(notify_obj)
-            send_notify_email(emails,book_obj,url_for('search',search=book_obj.title,book_id=book_obj.id,_external=True))
-        session.delete(issued_book)
-        session.commit()
-        flash("Book successfully returned!")
-    else: # ISSUE IT
-        already_issued = session.query(Issued).filter_by(user_id=current_user.id).all()
-        if(len(already_issued)!=5):
-            issue = Issued(book_id=book_id, user_id=current_user.id)
-            book_obj.stocks-=1
-            session.add(issue)
+        # orig_stocks = book_obj.stocks
+        # book_obj.stocks+=1
+        # if book_obj.stocks!=0 and orig_stocks==0:
+        #     notify_objs = session.query(Notify).filter_by(book_id=book_id).all()
+        #     emails = []
+        #     for notify_obj in notify_objs:
+        #         emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
+        #         session.delete(notify_obj)
+        #     send_notify_email(emails,book_obj,url_for('search',search=book_obj.title,book_id=book_obj.id,_external=True))
+        # session.delete(issued_book)
+        existing_request = session.query(ToBeApproved).filter_by(book_id=book_id, user_id=current_user.id, type_approval='return').first()
+        if existing_request is None:
+            approval = ToBeApproved(book_id=book_id, user_id=current_user.id, type_approval='return')
+            session.add(approval)
             session.commit()
-            flash("Book successfully issued!")
+            flash("Book successfully returned! Waiting for approval!")
         else:
-            flash("You have reached your limit!")
+            flash("Book already submitted for return approval!")
+    else: # ISSUE IT
+        existing_request = session.query(ToBeApproved).filter_by(book_id=book_id, user_id=current_user.id, type_approval='issue').first()
+        if existing_request is None:
+            already_issued = session.query(Issued).filter_by(user_id=current_user.id).all()
+            waiting_for_approval = session.query(ToBeApproved).filter_by(user_id=current_user.id).all()
+            if(len(already_issued)+len(waiting_for_approval)!=5):
+                approval = ToBeApproved(book_id=book_id, user_id=current_user.id, type_approval='issue')
+                session.add(approval)
+                # issue = Issued(book_id=book_id, user_id=current_user.id)
+                # book_obj.stocks-=1
+                # session.add(issue)
+                session.commit()
+                flash("Book successfully issued! Waiting for approval!")
+            else:
+                flash("You have reached your limit!")
+        else:
+            flash("Book already submitted for issue approval!")
+    return redirect(request.referrer)
+
+
+@app.post("/approve/<book_id>/<user_id>/<type_approval>")
+@login_required
+def approve(book_id, user_id, type_approval):
+    if current_user.is_admin:
+        book_obj = session.query(Book).filter_by(id=book_id).first()
+        if book_obj is None:
+            flash("Invalid book id!")
+            return redirect(request.referrer)
+        approval = session.query(ToBeApproved).filter_by(user_id=user_id,book_id=book_id,type_approval=type_approval).first()
+        if approval:
+            session.delete(approval)
+            session.commit()
+            if type_approval=='issue':
+                issue = Issued(book_id=book_id, user_id=user_id)
+                book_obj.stocks-=1
+                session.add(issue)
+                session.commit()
+                flash("Approved issue!")
+            else:
+                issued_book = session.query(Issued).filter_by(book_id=book_id).first()
+                orig_stocks = book_obj.stocks
+                book_obj.stocks+=1
+                if book_obj.stocks!=0 and orig_stocks==0:
+                    notify_objs = session.query(Notify).filter_by(book_id=book_id).all()
+                    emails = []
+                    for notify_obj in notify_objs:
+                        emails.append(session.query(User.email).filter_by(id=notify_obj.user_id).first()[0])
+                        session.delete(notify_obj)
+                    send_notify_email(emails,book_obj,url_for('search',search=book_obj.title,book_id=book_obj.id,_external=True))
+                session.delete(issued_book)
+                session.commit()
+                flash("Approved return!")
+    else:
+        flash("Only admins can approve!")
+    return redirect(request.referrer)
+
+
+@app.post("/remove_approval_request/<book_id>")
+@login_required
+def remove_approval_request(book_id):
+    user_id = current_user.id
+    approval = session.query(ToBeApproved).filter_by(user_id=user_id,book_id=book_id).first()
+    if approval:
+        session.delete(approval)
+        session.commit()
+        flash("Removed approval request!")
     return redirect(request.referrer)
 
 

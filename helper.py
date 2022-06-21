@@ -5,13 +5,14 @@ from __main__ import mail
 from flask_mail import Message
 import datetime as dt
 from datetime import timedelta
+from config import EMAIL_USERNAME
 import re
 
 def hash_password(pswd):
     return sha256(pswd.encode('utf-8')).hexdigest()
 
 def send_reset_email(email, reset_url):
-    msg = Message('Password Reset Request', sender='noreply@bmscelib.com',recipients=[email])
+    msg = Message('Password Reset Request', sender=EMAIL_USERNAME,recipients=[email])
     msg.body = f"""To reset your password, click on the following link!
 
     {reset_url}
@@ -20,7 +21,7 @@ def send_reset_email(email, reset_url):
 
 def send_notify_email(emails, book_obj, url):
     if len(emails)!=0:
-        msg = Message('Book available notification!', sender='noreply@bmscelib.com',recipients=emails)
+        msg = Message('Book available notification!', sender=EMAIL_USERNAME,recipients=emails)
         msg.body = f"""The book you requested {book_obj.title} by {book_obj.author} is now available!
         Number of stocks left are {book_obj.stocks}.
         Click the following link to be able to issue the book!
@@ -30,7 +31,7 @@ def send_notify_email(emails, book_obj, url):
         mail.send(msg)
 
 def send_verification_email(email, verification_token):
-    msg = Message('Verification code', sender='noreply@bmscelib.com', recipients=[email])
+    msg = Message('Verification code', sender=EMAIL_USERNAME, recipients=[email])
     msg.body = f"""The verification code for your registration with BMSCE Lib is {verification_token}
     """
     mail.send(msg)
