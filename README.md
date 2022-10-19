@@ -1,5 +1,6 @@
-# pw
+# Digital Library
 
+## Installation
 - Install python3
 - `git clone git@github.com:pranftw/digital_library.git` or `https://github.com/pranftw/digital_library.git`
 - Create a virtual environment
@@ -9,4 +10,5 @@
 - `pip install -r requirements.txt`
 - `python app.py`
 
-SQL data credits: Aruna Ravi & Tarun Kumar
+## SQL data credits
+Aruna Ravi & Tarun Kumar BMSCE 2023
