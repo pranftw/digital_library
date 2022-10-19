@@ -8,3 +8,5 @@
 - Put all data into `config.py`
 - `pip install -r requirements.txt`
 - `python app.py`
+
+SQL data credits: Aruna Ravi & Tarun Kumar
