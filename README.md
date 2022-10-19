@@ -18,6 +18,9 @@
 - Login and Registration with email verification
 - All fields in forms validated
 - Reset password
+- Search books
+- Modify stock
+- Request for books
 - And many more...
 
 ## SQL data credits
